@@ -7,7 +7,7 @@ const getTitle = () => {
   return {
     text: "International wealth index (IWI)", // Title text
     left: "50%", // Adjust the left position as needed
-    top: "1%", // Adjust the top position as needed
+    top: "-1%", // Adjust the top position as needed
     textAlign: "center", // Title text alignment
     textStyle: {
       color: "#000", // Title text color
@@ -24,9 +24,15 @@ const getTitle = () => {
  */
 const getLegends = () => {
   return {
-    data: villageData.map((item) => item.village),
+    // data: data.map((item) => item.village),
     orient: "horizontal",
     bottom: 0,
+    type: "scroll",
+    itemHeight: 15,
+    itemWidth: 15,
+    textStyle: {
+      fontSize: 15,
+    },
   };
 };
 
@@ -34,8 +40,10 @@ const getLegends = () => {
  * Configures the x-axis for the chart.
  *
  * Sets the axis type to numeric value.
- * Configures the axis name, location, text style and gap.
- * Disables split lines on the axis.
+ * Customizes the axis name, position, and styling.
+ * Sets the axis range from 0 to 60.
+ * Sets the axis tick configuration.
+ * Configures formatting for the axis labels.
  */
 const getXAxis = () => {
   return {
@@ -49,12 +57,25 @@ const getXAxis = () => {
       padding: [40, 0, 0, 0],
     },
     nameGap: -380,
-    // min: 0,
-    // max: 60,
+    min: 0,
+    max: data[0]?.data?.length * 10,
     interval: 10,
     splitLine: {
       show: false,
     },
+    axisTick: {
+      interval: 0, // Set the interval to control tick spacing
+      show: true,
+      alignWithLabel: true,
+    },
+    axisLabel: {
+      color: "#A9A9A9",
+      fontSize: 18,
+      formatter: function (value) {
+        return value; // Display the x-axis value without modification
+      },
+    },
+    splitNumber: null,
   };
 };
 
@@ -62,8 +83,8 @@ const getXAxis = () => {
  * Configures the y-axis for the chart.
  *
  * Sets the axis type to numeric value.
- * Sets the axis interval to 25.
- * Configures the axis label formatter to display percentages.
+ * Configures styling and labels for the axis.
+ * Sets the axis tick and split configurations.
  */
 const getYAxis = () => {
   return {
@@ -73,41 +94,65 @@ const getYAxis = () => {
     interval: 25,
     axisLabel: {
       formatter: "{value}%",
+      hideOverlap: true,
+      showMaxLabel: true,
+      showMinLabel: true,
+      color: "#A9A9A9",
+      fontSize: 18,
+    },
+    splitNumber: "",
+    axisLine: {
+      lineStyle: {
+        color: "black",
+      },
+    },
+    nameTextStyle: {
+      fontSize: 12,
+      fontWeight: "bolder",
     },
   };
 };
 
 /**
- * Maps the village data array to a series array for the chart.
+ * Configures the series data for the chart.
  *
- * For each village data object, it creates a series with the village name,
- * bar chart type, smoothed bars with no gap, emphasis on the series when hovered,
- * the village data mapped to the series data, 100% bar width,
- * and labels displayed on top of the bars showing the percentage value.
- *
- * Returns the array of series objects.
+ * Maps over the village data array to generate a series object for each village.
+ * Sets the interval between x-axis values to 10.
+ * Configures the bar width, gap, and category gap.
+ * Stacks the series into groups by village index.
+ * Sets the bar color based on village index.
+ * Enables emphasis on hover to highlight bars.
  */
 const getSeries = () => {
-  return villageData.map((item, index) => ({
-    name: item.village,
-    type: "bar",
-    smooth: true,
-    barGap: 0,
-    emphasis: {
-      focus: "series",
-    },
-    data: item.data,
-    barWidth: "100%",
-    itemStyle: {
-      color: getColor(index),
-    },
-    // Uncomment this code to show the percentage on top of the bars
-    // label: {
-    //   show: true,
-    //   position: "top",
-    //   formatter: "{c}%", // Display data on top of the bars
-    // },
-  }));
+  return data.map((village, index) => {
+    var interval = 10; // Set the interval to 10
+    return {
+      name: village.village,
+      type: "bar",
+      data: village.data.map((value, i) => [i * interval, value]),
+      markArea: {},
+      // label: { show: true, position: "top" }, // Show labels on the bars
+      showSymbol: false,
+      smooth: false,
+      barWidth: 15, // Adjust the bar width as needed
+      barMaxWidth: 15,
+      barGap: "30%", // Adjust the barGap as needed
+      barCategoryGap: "20%", // Adjust the barCategoryGap as needed
+      stack: "Village " + (index + 1),
+      itemStyle: {
+        color: getColor(index),
+      },
+      emphasis: {
+        focus: "series",
+      },
+      // Uncomment this code to show the percentage on top of the bars
+      // label: {
+      //   show: true,
+      //   position: "top",
+      //   formatter: "{c}%", // Display data on top of the bars
+      // },
+    };
+  });
 };
 
 /**
@@ -134,9 +179,10 @@ const getToolBox = () => {
  */
 const getGrid = () => {
   return {
-    left: "10%",
-    right: "20%", // Adjust the right margin to leave space for the average display
     containLabel: true,
+    left: "2%",
+    right: "20%",
+    // bottom: 50, // Adjust the bottom to accommodate x-axis labels
   };
 };
 
@@ -145,10 +191,10 @@ const getGrid = () => {
  * Mutates the villageData array to add an "average" property for each village.
  */
 const addAverage = () => {
-  return villageData?.map((item) => {
+  return data?.map((item) => {
     const { data } = item;
-    const arr = data.reduce((acc1, currentArray) => acc1.map((value, index) => value + currentArray[index]), [0, 0]);
-    item.average = ((arr[0] + arr[1]) / data.length).toFixed(2);
+    const sum = data.reduce((acc, currentValue) => acc + currentValue, 0);
+    item.average = (sum / data.length).toFixed(2);
     return item;
   });
 };
@@ -185,6 +231,10 @@ const getAverageData = () => {
 const getToolTip = () => {
   return {
     trigger: "axis",
+    show: true,
+    textStyle: {
+      fontSize: 12,
+    },
     axisPointer: {
       type: "cross",
       //   type: "shadow",

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Histogram Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>
     <script type="text/javascript" src="./chart.js"></script>
 </head>
+
 <body>
     <!-- Creates a div element with id "main" that will contain the ECharts chart. 
          Sets the width to 100% and height to 600px for the chart dimensions. -->
@@ -14,49 +16,75 @@
          * villageData array contains data for multiple villages.
          * Each village object contains name and data array of x,y coordinate pairs.
          */
-        const villageData = [
+        let data = [];
+        /**
+         * Generates random data for multiple villages.
+         * Creates an array of village objects with name and random data.
+         * Village count and data count are configurable.
+         * Uses utility function getRandomNumber() to generate random data points.
+         */
+        // const getRandomGenerateData = () => {
+        //     const villageCount = 5;
+        //     const dataCount = 6;
+        //     const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        //     const generateData = (village) => Array.from({ length: dataCount }, () => getRandomNumber(1, 100));
+        //     const villages = Array.from({ length: villageCount }, (_, i) => ({
+        //         village: `Village ${i + 1}`,
+        //         data: generateData(i),
+        //     }));
+        //     return villages;
+        // };
+        // data = getRandomGenerateData();
+        data = [
             {
                 village: "Village 1",
-                data: [[4, 18], [13, 39], [21, 38], [31, 34], [41, 40], [52, 35]],
+                data: [18, 39, 38, 34, 40, 35],
             },
             {
                 village: "Village 2",
-                data: [[5, 22], [14, 52], [22, 73], [32, 64], [43, 50], [56, 30]],
+                data: [22, 52, 73, 64, 50, 30],
             },
             {
                 village: "Village 3",
-                data: [[6, 41], [16, 54], [23, 49], [33, 24], [45, 40], [54, 15]],
+                data: [41, 54, 49, 24, 40, 15],
             },
             {
                 village: "Village 4",
-                data: [[7, 27], [14, 30], [26, 64], [34, 38], [46, 66], [51, 59]],
+                data: [27, 30, 64, 38, 66, 59],
             },
             {
                 village: "Village 5",
-                data: [[8, 19], [18, 54], [23, 71], [36, 77], [47, 92], [55, 23]],
-            },
+                data: [19, 54, 71, 77, 92, 23],
+            }
         ];
-      /**
-       * Initializes ECharts chart instance and configures chart options.
-       *
-       * Creates chart instance with main div element as container.
-       * Sets up common chart options like title, legend, axes, series etc.
-       * Calls helper functions to generate specific chart options.
-       */
-      const chart = echarts.init(document.getElementById("main"));
-      const options = {
-        title: getTitle(), // Add the title
-        legend: getLegends(), // Add the legend
-        xAxis: getXAxis(), // Add the x-axis
-        yAxis: getYAxis(), // Add the y-axis
-        series: getSeries(), // Add the series
-        toolbox: getToolBox(), // Add the toolbox
-        grid: getGrid(), // Add the grid
-        graphic: getAverageData(), // Add the average data
-        // tooltip: getToolTip(), // Add the tooltip
-        // aria: getAria(), // Add the aria
-      };
-      chart && options && chart.setOption(options);
+        /**
+         * Initializes ECharts chart instance and configures chart options.
+         *
+         * Creates chart instance with main div element as container.
+         * Sets up common chart options like title, legend, axes, series etc.
+         * Calls helper functions to generate specific chart options.
+         */
+        const chart = echarts.init(document.getElementById("main"));
+        const options = {
+            title: getTitle(), // Add the title
+            legend: getLegends(), // Add the legend
+            xAxis: getXAxis(), // Add the x-axis
+            yAxis: getYAxis(), // Add the y-axis
+            series: getSeries(), // Add the series
+            toolbox: getToolBox(), // Add the toolbox
+            grid: getGrid(), // Add the grid
+            graphic: getAverageData(), // Add the average data
+            // tooltip: getToolTip(),
+            // aria: getAria(), // Add the aria
+            backgroundColor: "#f4f4f4", // Set a light background color
+            responsive: true,
+            visualMap: [],
+            dataZoom: {
+                type: "inside"
+            },
+        };
+        chart && options && chart.setOption(options);
     </script>
 </body>
+
 </html>
